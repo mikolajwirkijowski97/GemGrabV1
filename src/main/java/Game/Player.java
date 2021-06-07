@@ -11,22 +11,18 @@ import java.awt.geom.Point2D;
 @Setter
 public abstract class Player {
 
-    @Getter
-    @Setter
-    private Point2D pos;
-    @Getter
-    @Setter
-    private double rotation;
-    @Getter
-    @Setter
-    private int hp;
-    private Team team;
+    @Getter @Setter private Point2D pos;
+
+    @Getter @Setter private double rotation;
+
+    @Getter @Setter private int hp;
+    @Getter @Setter private Team team;
 
     private double attack_cooldown;
-    private double attack_timer;
+    @Getter @Setter private double attack_timer;
 
     private double ult_cooldown;
-    private double ult_timer;
+    @Getter @Setter private double ult_timer;
 
     private Game game;
 
