@@ -1,5 +1,7 @@
-package Client;
+package Client.Screens;
 
+import Client.GemGrab;
+import Client.QueueService;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -7,11 +9,27 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import org.lwjgl.opengl.GL20;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+import java.io.IOException;
+
+
 public class QueueScreen implements Screen {
     final GemGrab game;
     BitmapFont font = new BitmapFont();
+    QueueService service;
 
+    public QueueScreen(GemGrab game){
+        this.game = game;
+        service = null;
+        try{
+            service = new QueueService();
+            Thread serviceThread = new Thread(service);
+            serviceThread.start();
+            System.out.println("Service thread started");
+        }
+        catch(IOException e){
+            System.out.println(e.toString());
+        }
+    }
     @Override
     public void show() {
 
@@ -24,8 +42,8 @@ public class QueueScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
 
-
-        font.draw(game.batch, "Hello World!", game.WIDTH/2, game.HEIGHT/2);
+        int playerNumber = service.getQueueCount();
+        font.draw(game.batch, "Players: "+String.valueOf(playerNumber)+"/6", game.WIDTH/2, game.HEIGHT/2);
 
         game.batch.end();
 

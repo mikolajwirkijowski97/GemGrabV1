@@ -16,8 +16,8 @@ public class ServerConnectedPlayer {
 
         pSocket = socket;
 
-        out = new ObjectOutputStream(new BufferedOutputStream(pSocket.getOutputStream()));
-        in = new ObjectInputStream(new BufferedInputStream(pSocket.getInputStream()));
+        out = new ObjectOutputStream(pSocket.getOutputStream());
+        in = new ObjectInputStream(pSocket.getInputStream());
         QueueMessage msg;
         do{
             msg = (QueueMessage)in.readObject();

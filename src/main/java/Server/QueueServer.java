@@ -24,6 +24,13 @@ public class QueueServer implements Runnable {
         }
 
     }
+
+    public static void main (String[] arg) {
+        QueueServer qs = new QueueServer();
+        Thread serverThread = new Thread(qs);
+        serverThread.start();
+
+    }
     @Override
     public void run() {
         while (!Thread.interrupted()) {
@@ -32,10 +39,12 @@ public class QueueServer implements Runnable {
                 while (queuedPlayers.size() < 6) {
                     //dodanie gracza do poczekalni
                     Socket newPlayerSocket = QServer.accept();
+                    System.out.println("Connection from user accepted");
                     ServerConnectedPlayer newPlayer = new ServerConnectedPlayer(newPlayerSocket);
                     queuedPlayers.add(newPlayer);
 
                     //wysłanie wiadomości o ilości osób w poczekalni
+                    System.out.println("Count msg sent");
                     QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, " ",
                             ClassNames.Soldier, QueueMessageType.UPDATEPLAYERCOUNT); // #TODO dodać konstruktory bez niepotrzebnych pól
 

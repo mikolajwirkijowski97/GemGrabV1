@@ -6,11 +6,13 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import lombok.Getter;
+
 
 public class GameCamera {
 
-    private OrthographicCamera cam;
-    private StretchViewport viewport;
+    @Getter private OrthographicCamera cam;
+    @Getter private StretchViewport viewport;
 
     public GameCamera (int width, int height) {
         cam = new OrthographicCamera();
