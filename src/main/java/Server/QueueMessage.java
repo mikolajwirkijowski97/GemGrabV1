@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 public class QueueMessage implements Serializable {
 
     @Getter @Setter private int playerCount;
+    @Getter @Setter private int port;
     @Getter @Setter private String nick;
     @Getter @Setter private ClassNames className;
     @Getter @Setter private QueueMessageType messageType;

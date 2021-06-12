@@ -9,14 +9,22 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Queue;
 
-
 public class QueueServer implements Runnable {
-    private Queue<Socket> queuedConnections;
     private ServerSocket QServer;
     private int lobbyPort = 8181;
     private int qPort = 8080;
     private ArrayList<Thread> lobbyThreads;
 
+    public QueueServer(){
+        try{
+            QServer = new ServerSocket(qPort);
+        }
+        catch(IOException e){
+            System.out.println(e.toString());
+        }
+
+    }
+    @Override
     public void run() {
         while (!Thread.interrupted()) {
             try {
@@ -28,7 +36,7 @@ public class QueueServer implements Runnable {
                     queuedPlayers.add(newPlayer);
 
                     //wysłanie wiadomości o ilości osób w poczekalni
-                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(), " ",
+                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, " ",
                             ClassNames.Soldier, QueueMessageType.UPDATEPLAYERCOUNT); // #TODO dodać konstruktory bez niepotrzebnych pól
 
                     sendMessageTo(queuedPlayers, pCountMsg);
@@ -37,11 +45,20 @@ public class QueueServer implements Runnable {
                 //dodanie graczy z poczekalni do lobby
                 ServerSocket lobbySocket = new ServerSocket(lobbyPort);
                 ArrayList<ServerConnectedPlayer> lobbyPlayers = new ArrayList<>();
+
                 for (ServerConnectedPlayer player : queuedPlayers) {
+                    //wiadomość do gracza z prośbą połączenia się z lobby
+                    QueueMessage connectionMsg = new QueueMessage(0,lobbyPort," ",ClassNames.Soldier,QueueMessageType.CONNECTTOLOBBY);
+                    sendMessageTo(player, connectionMsg);
+
+                    //socket gracz<->lobby
                     Socket newPlayerLobbySocket = lobbySocket.accept();
+
+
+
                     ServerConnectedPlayer newPlayer = new ServerConnectedPlayer(newPlayerLobbySocket);
                     lobbyPlayers.add(newPlayer);
-                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(), " ",
+                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, " ",
                             ClassNames.Soldier, QueueMessageType.UPDATEPLAYERCOUNT);
 
                 }
@@ -59,9 +76,13 @@ public class QueueServer implements Runnable {
 
     public void sendMessageTo(ArrayList<ServerConnectedPlayer> players, QueueMessage msg) throws IOException {
         for (ServerConnectedPlayer player : players) {
-            ObjectOutputStream out = player.getOut();
-            out.writeObject(msg);
+            sendMessageTo(player, msg);
         }
 
+    }
+
+    public void sendMessageTo(ServerConnectedPlayer player, QueueMessage msg) throws IOException {
+            ObjectOutputStream out = player.getOut();
+            out.writeObject(msg);
     }
 }

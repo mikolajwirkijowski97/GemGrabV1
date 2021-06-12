@@ -27,17 +27,17 @@ public abstract class Player {
     private Game game;
 
 
-    abstract Boolean use_attack();
+    protected abstract Boolean use_attack();
 
-    abstract Boolean use_ult();
+    protected abstract Boolean use_ult();
 
-    abstract void resetHp();
+    protected abstract void resetHp();
 
     public void takeDamage(int dmg) {
         hp -= dmg;
     }
 
-    public void die() {
+    protected void die() {
         setPos(game.getRespawnLoc(team));
     }
 
