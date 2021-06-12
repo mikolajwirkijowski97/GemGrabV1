@@ -3,28 +3,28 @@ package Game;
 import Game.Team;
 import lombok.Getter;
 import lombok.Setter;
-
+import lombok.RequiredArgsConstructor;
 import java.awt.geom.Point2D;
 
-
-@Getter
-@Setter
+@RequiredArgsConstructor
 public abstract class Player {
+    @Getter private final int id;
 
     @Getter @Setter private Point2D pos;
 
     @Getter @Setter private double rotation;
 
+    @Getter private final int baseHp;
     @Getter @Setter private int hp;
-    @Getter @Setter private Team team;
+    @Getter @Setter private final Team team;
 
-    private double attack_cooldown;
+    private final double attack_cooldown;
     @Getter @Setter private double attack_timer;
 
-    private double ult_cooldown;
+    private final double ult_cooldown;
     @Getter @Setter private double ult_timer;
 
-    private Game game;
+    private final Game game;
 
 
     protected abstract Boolean use_attack();

@@ -1,13 +1,13 @@
 package Server;
 
-import Game.PlayerClasses.ClassNames;
+import Game.PlayerClasses.ClassName;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.Queue;
+
 
 public class QueueServer implements Runnable {
     private ServerSocket QServer;
@@ -36,7 +36,7 @@ public class QueueServer implements Runnable {
         while (!Thread.interrupted()) {
             try {
                 ArrayList<ServerConnectedPlayer> queuedPlayers = new ArrayList<>();
-                while (queuedPlayers.size() < 6) {
+                while (queuedPlayers.size() < 4) {
                     //dodanie gracza do poczekalni
                     Socket newPlayerSocket = QServer.accept();
                     System.out.println("Connection from user accepted");
@@ -46,7 +46,7 @@ public class QueueServer implements Runnable {
                     //wysłanie wiadomości o ilości osób w poczekalni
                     System.out.println("Count msg sent");
                     QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, " ",
-                            ClassNames.Soldier, QueueMessageType.UPDATEPLAYERCOUNT); // #TODO dodać konstruktory bez niepotrzebnych pól
+                            ClassName.Soldier, QueueMessageType.UPDATEPLAYERCOUNT); // #TODO dodać konstruktory bez niepotrzebnych pól
 
                     sendMessageTo(queuedPlayers, pCountMsg);
                 }
@@ -57,7 +57,7 @@ public class QueueServer implements Runnable {
 
                 for (ServerConnectedPlayer player : queuedPlayers) {
                     //wiadomość do gracza z prośbą połączenia się z lobby
-                    QueueMessage connectionMsg = new QueueMessage(0,lobbyPort," ",ClassNames.Soldier,QueueMessageType.CONNECTTOLOBBY);
+                    QueueMessage connectionMsg = new QueueMessage(0,lobbyPort," ", ClassName.Soldier,QueueMessageType.CONNECTTOLOBBY);
                     sendMessageTo(player, connectionMsg);
 
                     //socket gracz<->lobby
@@ -68,7 +68,7 @@ public class QueueServer implements Runnable {
                     ServerConnectedPlayer newPlayer = new ServerConnectedPlayer(newPlayerLobbySocket);
                     lobbyPlayers.add(newPlayer);
                     QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, " ",
-                            ClassNames.Soldier, QueueMessageType.UPDATEPLAYERCOUNT);
+                            ClassName.Soldier, QueueMessageType.UPDATEPLAYERCOUNT);
 
                 }
 

@@ -1,5 +1,5 @@
 package Server;
-import Game.PlayerClasses.ClassNames;
+import Game.PlayerClasses.ClassName;
 import java.io.*;
 import java.net.Socket;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 public class ServerConnectedPlayer {
     @Getter @Setter final private String pNick;
-    @Getter @Setter private ClassNames selectedClass;
+    @Getter @Setter private ClassName selectedClass;
     @Getter @Setter private Socket pSocket;
     @Getter final private ObjectOutputStream out;
     @Getter final private ObjectInputStream in;
@@ -26,7 +26,7 @@ public class ServerConnectedPlayer {
 
         pNick = msg.getNick();
         selectedClass = msg.getClassName();
-
+        System.out.println("player : "+pNick+" class: "+selectedClass.name());
 
     }
 }

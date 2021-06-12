@@ -1,49 +1,85 @@
 package Client.Screens;
+
 import Client.GemGrab;
-import Client.QueueService;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import org.lwjgl.opengl.GL20;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import java.io.IOException;
-import java.util.ArrayList;
+import Game.PlayerClasses.ClassName;
 
 
 public class MainMenuScreen implements Screen {
     final GemGrab game;
     private Stage stage;
     private Skin skin;
-    TextureAtlas buttonAtlas;
-    TextButton button;
-    TextButtonStyle textButtonStyle;
 
-    public MainMenuScreen(GemGrab game){
+    private int START_POSITIONX;
+    private int START_POSITIONY;
+
+    private int COL_W = 150;
+    private int COL_H = 45;
+
+    TextButton startButton;
+    TextButton classButton;
+
+    private ClassName[] classes;
+    private int currentClassChoice;
+
+    public MainMenuScreen(GemGrab game) {
         this.game = game;
         this.stage = new Stage(game.camera.getViewport());
         Gdx.input.setInputProcessor(stage);
+        START_POSITIONX = game.WIDTH / 2;
+        START_POSITIONY = game.HEIGHT / 2;
 
 
-        skin = new Skin();
-        buttonAtlas = new TextureAtlas(Gdx.files.internal("buttons/buttons.pack"));
-        skin.addRegions(buttonAtlas);
-        textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = game.font;
-        textButtonStyle.up = skin.getDrawable("up-button");
-        textButtonStyle.down = skin.getDrawable("down-button");
-        textButtonStyle.checked = skin.getDrawable("checked-button");
-        button = new TextButton("Button1", textButtonStyle);
-        stage.addActor(button);
+        skin = new Skin(Gdx.files.internal("src/main/Skins/Default/uiskin.json"));
 
+        startButton = new TextButton("START", skin);
+        startButton.setSize(COL_W, COL_H);
+        startButton.setPosition(START_POSITIONX - startButton.getWidth() / 2, START_POSITIONY);
+        stage.addActor(startButton);
+
+        startButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new QueueScreen(game, getChoice() ));
+            }
+        });
+
+
+        classes = ClassName.values();
+        currentClassChoice = 0;
+        classButton = new TextButton(nextClass(), skin);
+        classButton.setSize(COL_W, COL_H);
+        classButton.setPosition(START_POSITIONX - startButton.getWidth() / 2, START_POSITIONY - COL_H * 2);
+        classButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                classButton.setText(nextClass());
+            }
+        });
+        stage.addActor(classButton);
     }
-    public void createButtons(){
 
+    public String nextClass() {
+        if (currentClassChoice < classes.length-1) {
+            return classes[++currentClassChoice].name();
+        } else {
+            currentClassChoice = -1;
+            return classes[++currentClassChoice].name();
+        }
     }
+
+    public ClassName getChoice() {
+        return classes[currentClassChoice];
+    }
+
+
     @Override
     public void show() {
 
@@ -52,7 +88,7 @@ public class MainMenuScreen implements Screen {
     @Override
     public void render(float delta) {
 
-        Gdx.gl.glClearColor(1,0,0,1);
+        Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         update(delta);
@@ -62,20 +98,18 @@ public class MainMenuScreen implements Screen {
         game.batch.begin();
 
 
-
-
-
         game.batch.end();
 
     }
 
-    public void update(float delta){
+    public void update(float delta) {
         stage.act(delta);
 
     }
+
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width,height,false);
+        stage.getViewport().update(width, height, false);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package Client;
 import lombok.Getter;
-import Game.PlayerClasses.ClassNames;
+import Game.PlayerClasses.ClassName;
 import java.io.*;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -16,12 +16,15 @@ public class QueueService implements Runnable {
      private int qPort = 8080;
      private String host = "localhost";
      private Socket socket;
+
+     private ClassName classChoice;
     @Getter final private ObjectOutputStream out;
     @Getter final private ObjectInputStream in;
 
      //Socket Connection handled in this constructor, bad connection handled here, stream creation throws to caller
-     public QueueService()  throws IOException {
+     public QueueService(ClassName classChoice)  throws IOException {
          queueCount = 0;
+         this.classChoice = classChoice;
 
          for(int i=0;i<retryCount;i++){
              try{
@@ -52,9 +55,9 @@ public class QueueService implements Runnable {
     @Override
     public void run() {
          System.out.println("Sending user info");
-         QueueMessage msg = new QueueMessage(0,0,"lupsik",ClassNames.Soldier,QueueMessageType.USERMSG);
+         QueueMessage msg = new QueueMessage(0,0,"lupsik", classChoice,QueueMessageType.USERMSG);
          sendMessage(msg);
-        while(queueCount < 6){
+        while(queueCount < 4){
             try{
                 updateQueueCount();
                 System.out.println(getQueueCount());
