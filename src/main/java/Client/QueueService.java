@@ -16,16 +16,16 @@ public class QueueService implements Runnable {
      private int qPort = 8080;
      private String host = "localhost";
      private Socket socket;
-
+     private GemGrab game;
      private ClassName classChoice;
     @Getter final private ObjectOutputStream out;
     @Getter final private ObjectInputStream in;
 
      //Socket Connection handled in this constructor, bad connection handled here, stream creation throws to caller
-     public QueueService(ClassName classChoice)  throws IOException {
+     public QueueService(ClassName classChoice,GemGrab game)  throws IOException {
          queueCount = 0;
          this.classChoice = classChoice;
-
+         this.game = game;
          for(int i=0;i<retryCount;i++){
              try{
                  socket = new Socket(host,qPort);
@@ -55,7 +55,7 @@ public class QueueService implements Runnable {
     @Override
     public void run() {
          System.out.println("Sending user info");
-         QueueMessage msg = new QueueMessage(0,0,"lupsik", classChoice,QueueMessageType.USERMSG);
+         QueueMessage msg = new QueueMessage(0,0,game.getUid(), classChoice,QueueMessageType.USERMSG);
          sendMessage(msg);
         while(queueCount < 4){
             try{

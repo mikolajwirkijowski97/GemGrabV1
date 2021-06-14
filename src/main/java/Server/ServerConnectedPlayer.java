@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class ServerConnectedPlayer {
-    @Getter @Setter final private String pNick;
+    @Getter @Setter final private int uid;
     @Getter @Setter private ClassName selectedClass;
     @Getter @Setter private Socket pSocket;
     @Getter final private ObjectOutputStream out;
@@ -24,9 +24,9 @@ public class ServerConnectedPlayer {
 
         }while(msg.getMessageType() != QueueMessageType.USERMSG);
 
-        pNick = msg.getNick();
+        uid = msg.getUid();
         selectedClass = msg.getClassName();
-        System.out.println("player : "+pNick+" class: "+selectedClass.name());
+        System.out.println("player : "+uid+" class: "+selectedClass.name());
 
     }
 }

@@ -1,9 +1,12 @@
 package Game.PlayerClasses;
+import Game.GameHandler;
+import Game.Team;
+import Game.Hero;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
-import Game.Player;
 
-
-public class Heavy extends Player {
+public class Heavy extends Hero {
 
     @Override
     protected Boolean use_attack(){
@@ -17,4 +20,10 @@ public class Heavy extends Player {
 
     @Override
     protected void resetHp(){ }
+
+    public Heavy(int id, Team team){
+        super(new Sprite(new Texture("src/main/Assets/Heros/Heavy.png")),id,400,10,
+                team, 2,10);
+    }
+
 }

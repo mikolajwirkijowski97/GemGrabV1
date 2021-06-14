@@ -12,7 +12,7 @@ public class QueueMessage implements Serializable {
 
     @Getter @Setter private int playerCount;
     @Getter @Setter private int port;
-    @Getter @Setter private String nick;
+    @Getter @Setter private int uid;
     @Getter @Setter private ClassName className;
     @Getter @Setter private QueueMessageType messageType;
 }

@@ -45,7 +45,7 @@ public class QueueServer implements Runnable {
 
                     //wysłanie wiadomości o ilości osób w poczekalni
                     System.out.println("Count msg sent");
-                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, " ",
+                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, 0,
                             ClassName.Soldier, QueueMessageType.UPDATEPLAYERCOUNT); // #TODO dodać konstruktory bez niepotrzebnych pól
 
                     sendMessageTo(queuedPlayers, pCountMsg);
@@ -57,7 +57,7 @@ public class QueueServer implements Runnable {
 
                 for (ServerConnectedPlayer player : queuedPlayers) {
                     //wiadomość do gracza z prośbą połączenia się z lobby
-                    QueueMessage connectionMsg = new QueueMessage(0,lobbyPort," ", ClassName.Soldier,QueueMessageType.CONNECTTOLOBBY);
+                    QueueMessage connectionMsg = new QueueMessage(0,lobbyPort,0, ClassName.Soldier,QueueMessageType.CONNECTTOLOBBY);
                     sendMessageTo(player, connectionMsg);
 
                     //socket gracz<->lobby
@@ -67,7 +67,7 @@ public class QueueServer implements Runnable {
 
                     ServerConnectedPlayer newPlayer = new ServerConnectedPlayer(newPlayerLobbySocket);
                     lobbyPlayers.add(newPlayer);
-                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, " ",
+                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, 0,
                             ClassName.Soldier, QueueMessageType.UPDATEPLAYERCOUNT);
 
                 }

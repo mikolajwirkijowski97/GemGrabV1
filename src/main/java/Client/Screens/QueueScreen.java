@@ -24,7 +24,7 @@ public class QueueScreen implements Screen {
         service = null;
 
         try{
-            service = new QueueService(classChoice);
+            service = new QueueService(classChoice,game);
             Thread serviceThread = new Thread(service);
             serviceThread.start();
             System.out.println("Service thread started");

@@ -1,8 +1,15 @@
 package Client.Screens;
 
 import Client.GemGrab;
+import Game.GameHandler;
+import Game.Hero;
+import Game.PlayerClasses.Soldier;
+import Game.Team;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -10,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import org.lwjgl.opengl.GL20;
 import Game.PlayerClasses.ClassName;
+
+import java.util.ArrayList;
 
 
 public class MainMenuScreen implements Screen {
@@ -25,6 +34,7 @@ public class MainMenuScreen implements Screen {
 
     TextButton startButton;
     TextButton classButton;
+    TextButton soloButton;
 
     private ClassName[] classes;
     private int currentClassChoice;
@@ -39,7 +49,25 @@ public class MainMenuScreen implements Screen {
 
         skin = new Skin(Gdx.files.internal("src/main/Skins/Default/uiskin.json"));
 
-        startButton = new TextButton("START", skin);
+        soloButton = new TextButton("SOLO", skin);
+        soloButton.setSize(COL_W, COL_H);
+        soloButton.setPosition(START_POSITIONX - soloButton.getWidth() / 2, START_POSITIONY + COL_H*2);
+        soloButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Hero player = new Soldier(game.getUid(), Team.TEAMBLUE);
+                ArrayList<Hero> players = new ArrayList<>();
+                players.add(player);
+
+                TiledMap map = new TmxMapLoader().load("src/main/Assets/Tiles/gemgrab.tmx");
+
+                game.setScreen(new GameScreen(game, new GameHandler(players,30,(TiledMapTileLayer) map.getLayers().get("Collision"))));
+            }
+        });
+        stage.addActor(soloButton);
+
+
+        startButton = new TextButton("SEARCH", skin);
         startButton.setSize(COL_W, COL_H);
         startButton.setPosition(START_POSITIONX - startButton.getWidth() / 2, START_POSITIONY);
         stage.addActor(startButton);
