@@ -1,25 +1,38 @@
 package Game;
 import Client.GemGrab;
+import Server.HeroInfo;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-@RequiredArgsConstructor
+
 public class GameHandler {
 
     Vector2 teamBlueLoc;
     Vector2 teamRedLoc;
-    @Getter private final ArrayList<Hero> players;
+    @Getter private final ArrayList<HeroInfo> players;
 
     private final float unitScale = GemGrab.unitScale;
     @Getter private final int tickrate;
 
     @Getter private final TiledMapTileLayer collisionLayer;
     @Getter private String blockedKey = "blocked";
+
+    public GameHandler(ArrayList<HeroInfo> players, int tickrate, TiledMapTileLayer collisionLayer) {
+        this.players = players;
+
+        this.tickrate = tickrate;
+        this.collisionLayer = collisionLayer;
+        this.teamBlueLoc = new Vector2(900,160);
+        this.teamRedLoc = new Vector2(900,1600);
+        setStartingLocations();
+    }
+
+
+
 
     private boolean isCellBlocked(float x, float y) {
         TiledMapTileLayer.Cell cell = collisionLayer.getCell((int) (x/unitScale / collisionLayer.getTileWidth()), (int) (y/unitScale / collisionLayer.getTileHeight()));
@@ -31,21 +44,21 @@ public class GameHandler {
         else return teamBlueLoc;
     }
 
-    public boolean collidesRight(Hero hero) {
+    public boolean collidesRight(HeroInfo hero) {
         for(float step = 0; step <= hero.getHeight(); step += hero.getIncrement())
             if(isCellBlocked(hero.getX() + hero.getWidth(), hero.getY() + step))
                 return true;
         return false;
     }
 
-    public boolean collidesLeft(Hero hero) {
+    public boolean collidesLeft(HeroInfo hero) {
         for(float step = 0; step <= hero.getHeight(); step += hero.getIncrement())
             if(isCellBlocked(hero.getX(), hero.getY() + step))
                 return true;
         return false;
     }
 
-    public boolean collidesTop(Hero hero) {
+    public boolean collidesTop(HeroInfo hero) {
         for(float step = 0; step <= hero.getWidth(); step += hero.getIncrement())
             if(isCellBlocked(hero.getX() + step, hero.getY() + hero.getHeight()))
                 return true;
@@ -53,15 +66,15 @@ public class GameHandler {
 
     }
 
-    public boolean collidesBottom(Hero hero) {
+    public boolean collidesBottom(HeroInfo hero) {
         for(float step = 0; step <= hero.getWidth(); step += hero.getIncrement())
             if(isCellBlocked(hero.getX() + step, hero.getY()))
                 return true;
         return false;
     }
 
-    public Hero getPlayerWithID(int uid){
-        for(Hero player : players){
+    public HeroInfo getPlayerWithID(int uid){
+        for(HeroInfo player : players){
             if(player.getId()==uid){
                 return player;
             }
@@ -70,7 +83,7 @@ public class GameHandler {
     }
 
     public void update() {
-        for(Hero player : players){
+        for(HeroInfo player : players){
             player.doActions();
             Vector2 velocity = player.getVelocity();
             float speed = player.getBaseSpeed();
@@ -122,7 +135,37 @@ public class GameHandler {
             player.setVelocity(velocity);
 
         }
+    }
 
+    public void setStartingLocations(){
+        for(HeroInfo player:players){
+            if(player.getTeam() == Team.TEAMRED){
+                player.setPosition(teamRedLoc);
+            }
+            else{
+                player.setPosition(teamBlueLoc);
+            }
+        }
+    }
 
+    public void updateFromPlayerList(ArrayList<HeroInfo> players){
+
+        for(HeroInfo localPlayer:this.players){
+            for(HeroInfo serverPlayer:players){
+                if(serverPlayer.getId() == localPlayer.getId()){
+                    localPlayer.setPosition(serverPlayer.getPosition());
+                }
+            }
+        }
+    }
+    public void updateFromPlayerList(ArrayList<Hero> players,int uid){
+        for(HeroInfo localPlayer:this.players){
+            for(Hero serverPlayer:players){
+                if(localPlayer.getId() == uid) break;
+                if(serverPlayer.getId() == localPlayer.getId()){
+                    localPlayer.setPosition(serverPlayer.getPosition());
+                }
+            }
+        }
     }
 }

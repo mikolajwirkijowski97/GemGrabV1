@@ -1,6 +1,9 @@
-package Game;
+package Server;
 
+import Game.Hero;
 import Game.PlayerClasses.ClassName;
+import Game.Team;
+import Game.Action;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
@@ -9,27 +12,35 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
 
-public abstract class Hero  {
-    public Hero(int id, int baseHp, int baseSpeed, Team team, double attack_cooldown, double ult_cooldown,ClassName className) {
-        this.className = className;
+public  class HeroInfo implements Serializable {
 
-        this.width = 100;
-        this.height = 100;
-        this.id = id;
-        this.baseHp = baseHp;
-        this.baseSpeed = baseSpeed;
-        this.team = team;
-        this.attack_cooldown = attack_cooldown;
-        this.ult_cooldown = ult_cooldown;
+    public HeroInfo(Hero hero) {
+        this.className = hero.getClassName();
+        this.width = hero.getWidth();
+        this.height = hero.getHeight();
+        this.id = hero.getId();
+        this.baseHp = hero.getBaseHp();
+        this.baseSpeed = hero.getBaseSpeed();
+        this.team = hero.getTeam();
+        this.attack_cooldown = hero.getAttack_cooldown();
+        this.ult_cooldown = hero.getUlt_cooldown();
+        this.attack_timer = hero.getAttack_timer();
+        this.ult_timer = hero.getUlt_timer();
+
+        this.position = hero.getPosition();
+        this.velocity = hero.getVelocity();
+
+        this.actions = hero.getActions();
     }
-    @Getter @Setter private final ClassName className;
+
 
     @Setter @Getter private float increment=0;
-
+    @Getter @Setter private ClassName className;
     @Getter @Setter private Vector2 velocity = new Vector2();
     @Getter @Setter private Vector2 position= new Vector2(150,150);
 
@@ -51,7 +62,7 @@ public abstract class Hero  {
     @Getter private final double ult_cooldown;
     @Getter @Setter private double ult_timer=0;
 
-    @Getter private ArrayList<Action> actions = new ArrayList<>();
+    private ArrayList<Action> actions = new ArrayList<>();
 
     public void addAction(Action action){
         System.out.println("Action registered");
@@ -95,11 +106,11 @@ public abstract class Hero  {
 
 
 
-    protected abstract Boolean use_attack();
+    protected  Boolean use_attack(){return true;}
 
-    protected abstract Boolean use_ult();
+    protected  Boolean use_ult(){return true;}
 
-    protected abstract void resetHp();
+    protected  void resetHp(){hp=getBaseHp();}
 
     public void takeDamage(int dmg) {
         hp -= dmg;

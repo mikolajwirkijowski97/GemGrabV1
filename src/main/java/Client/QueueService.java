@@ -1,4 +1,6 @@
 package Client;
+import Client.Screens.GameScreen;
+import Game.GameHandler;
 import lombok.Getter;
 import Game.PlayerClasses.ClassName;
 import java.io.*;
@@ -14,6 +16,7 @@ public class QueueService implements Runnable {
 
      private int retryCount = 10;
      private int qPort = 8080;
+     private int lPort = 8181;
      private String host = "localhost";
      private Socket socket;
      private GemGrab game;
@@ -68,6 +71,21 @@ public class QueueService implements Runnable {
                 System.out.println(e.toString());
             }
         }
+        QueueMessage connectionMessage = null;
+        Socket lobbySocket = null;
+        try{
+            System.out.println("Waiting for connection message");
+            connectionMessage = (QueueMessage)in.readObject();
+            System.out.println("Received connection message");
+            lobbySocket = new Socket(host,lPort);
+
+        }catch(IOException|ClassNotFoundException e){
+            System.out.println("Couldnt get receive connection message due to :");
+            System.out.println(e.toString());
+        }
+
+        game.setScreen(new GameScreen(game,lobbySocket));
+
     }
 
     public void sendMessage(QueueMessage msg) {

@@ -1,6 +1,9 @@
 package Server;
 
+import Client.GemGrab;
 import Game.PlayerClasses.ClassName;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -22,13 +25,18 @@ public class QueueServer implements Runnable {
         catch(IOException e){
             System.out.println(e.toString());
         }
+        this.lobbyThreads = new ArrayList<Thread>();
 
     }
 
     public static void main (String[] arg) {
-        QueueServer qs = new QueueServer();
-        Thread serverThread = new Thread(qs);
-        serverThread.start();
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        config.setTitle("GEM GRAB");
+        config.setIdleFPS(60);
+        config.useVsync(true);
+
+        config.setWindowedMode(1,1);
+        new Lwjgl3Application(new GdxContext(),config);
 
     }
     @Override
@@ -59,16 +67,15 @@ public class QueueServer implements Runnable {
                     //wiadomość do gracza z prośbą połączenia się z lobby
                     QueueMessage connectionMsg = new QueueMessage(0,lobbyPort,0, ClassName.Soldier,QueueMessageType.CONNECTTOLOBBY);
                     sendMessageTo(player, connectionMsg);
-
+                    System.out.println("connectionmsg sent");
                     //socket gracz<->lobby
                     Socket newPlayerLobbySocket = lobbySocket.accept();
+                    System.out.println("lobbysocket accepted");
 
 
-
-                    ServerConnectedPlayer newPlayer = new ServerConnectedPlayer(newPlayerLobbySocket);
+                    ServerConnectedPlayer newPlayer = new ServerConnectedPlayer(newPlayerLobbySocket,player.getUid(),player.getSelectedClass());
+                    System.out.println("Created ServerConnectedPlayer instance");
                     lobbyPlayers.add(newPlayer);
-                    QueueMessage pCountMsg = new QueueMessage(queuedPlayers.size(),0, 0,
-                            ClassName.Soldier, QueueMessageType.UPDATEPLAYERCOUNT);
 
                 }
 

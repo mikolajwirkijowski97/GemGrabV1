@@ -11,6 +11,6 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class SnapshotMessage implements Serializable {
-    public ArrayList<Hero> players;
+    @Getter private ArrayList<HeroInfo> players;
 
 }

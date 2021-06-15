@@ -22,8 +22,10 @@ public class Heavy extends Hero {
     protected void resetHp(){ }
 
     public Heavy(int id, Team team){
-        super(new Sprite(new Texture("src/main/Assets/Heros/Heavy.png")),id,400,10,
-                team, 2,10);
+        super(id,400,10,
+                team, 2,10,ClassName.Heavy);
     }
+
+
 
 }

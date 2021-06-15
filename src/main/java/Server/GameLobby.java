@@ -1,5 +1,6 @@
 package Server;
 
+import Client.GemGrab;
 import Game.GameHandler;
 import Game.Hero;
 import Game.PlayerClasses.Heavy;
@@ -18,16 +19,19 @@ import java.util.ArrayList;
 
 public class GameLobby implements Runnable {
     private final ArrayList<ServerConnectedPlayer> playersConnection;
-    private ArrayList<Hero> players;
+    private ArrayList<HeroInfo> players;
     private final ServerSocket server;
     private Boolean alive;
     private GameHandler logic;
     private long timer = 0;
+    private GemGrab game;
 
     public GameLobby(ArrayList<ServerConnectedPlayer> playersConnection, ServerSocket socket) throws IOException {
+        this.game = new GemGrab();
         this.alive = true;
         this.playersConnection = playersConnection;
         this.server = socket;
+        this.players = new ArrayList<HeroInfo>();
         createHeroes();
         TiledMap map = new TmxMapLoader().load("src/main/Assets/Tiles/gemgrab.tmx");
         this.logic = new GameHandler(players, 30, (TiledMapTileLayer) map.getLayers().get("Collision"));
@@ -35,18 +39,20 @@ public class GameLobby implements Runnable {
 
     public void run() {
         createHeroes();
+        sendSnapshot();
 
         boolean running = true;
 
         long last_time = System.nanoTime();
         while(!Thread.interrupted() && running ){
             long time = System.nanoTime();
-            if(timer>=1/60){
-                logic.update();;
+            if(timer>=1/ logic.getTickrate()){
+                logic.update();
+                sendSnapshot();
             }
-
             timer += time - last_time/1000000000;
             last_time = time;
+
         }
 
     }
@@ -60,13 +66,16 @@ public class GameLobby implements Runnable {
                 team = Team.TEAMRED;
             }
 
-            Hero newHero = null;
+            HeroInfo newHero = null;
+            Hero tmp;
             switch (player.getSelectedClass()) {
                 case Heavy:
-                    newHero = new Heavy(player.getUid(), team);
+                    tmp = new Heavy(player.getUid(), team);
+                    newHero = new HeroInfo(tmp);
                     break;
                 case Soldier:
-                    newHero = new Soldier(player.getUid(), team);
+                    tmp = new Soldier(player.getUid(), team);
+                    newHero = new HeroInfo(tmp);
                     break;
 
             }
@@ -75,10 +84,31 @@ public class GameLobby implements Runnable {
     }
 
     private void sendSnapshot(){
-        ArrayList<Hero> snapshot = logic.getPlayers();
-        SnapshotMessage snapshotMessage = new SnapshotMessage(players);
+        ArrayList<HeroInfo> snapshot = logic.getPlayers();
+
+        SnapshotMessage snapshotMessage = new SnapshotMessage(snapshot);
+        for(ServerConnectedPlayer player: playersConnection){
+            try{
+                sendMessageTo(player, snapshotMessage);
+            }
+            catch(IOException e){
+                System.out.println("SendSnapshot IOEXCEPTION"+e.toString());
+            }
+
+        }
 
 
 
+    }
+    public void sendMessageTo(ServerConnectedPlayer player, SnapshotMessage msg) throws IOException {
+        ObjectOutputStream out = player.getOut();
+        out.writeObject(msg);
+    }
+
+    private ServerConnectedPlayer getPlayerConnection(int uid){
+        for(ServerConnectedPlayer connection : playersConnection){
+            if(connection.getUid() == uid) {return connection;}
+        }
+        return null;
     }
 }

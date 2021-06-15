@@ -29,4 +29,16 @@ public class ServerConnectedPlayer {
         System.out.println("player : "+uid+" class: "+selectedClass.name());
 
     }
+    public ServerConnectedPlayer(Socket socket, int uid, ClassName selectedClass) throws IOException,ClassNotFoundException {
+
+        pSocket = socket;
+
+        out = new ObjectOutputStream(pSocket.getOutputStream());
+        in = new ObjectInputStream(pSocket.getInputStream());
+
+        this.uid = uid;
+        this.selectedClass =selectedClass;
+        System.out.println("player : "+uid+" class: "+selectedClass.name());
+
+    }
 }

@@ -25,7 +25,7 @@ public class Soldier extends Hero {
     }
 
     public Soldier(int id, Team team){
-        super( new Sprite(new Texture("src/main/Assets/Heros/Soldier.png")),id,200,
-                40,team, 1,8);
+        super(id,200,
+                40,team, 1,8,ClassName.Soldier);
     }
 }

@@ -49,22 +49,6 @@ public class MainMenuScreen implements Screen {
 
         skin = new Skin(Gdx.files.internal("src/main/Skins/Default/uiskin.json"));
 
-        soloButton = new TextButton("SOLO", skin);
-        soloButton.setSize(COL_W, COL_H);
-        soloButton.setPosition(START_POSITIONX - soloButton.getWidth() / 2, START_POSITIONY + COL_H*2);
-        soloButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                Hero player = new Soldier(game.getUid(), Team.TEAMBLUE);
-                ArrayList<Hero> players = new ArrayList<>();
-                players.add(player);
-
-                TiledMap map = new TmxMapLoader().load("src/main/Assets/Tiles/gemgrab.tmx");
-
-                game.setScreen(new GameScreen(game, new GameHandler(players,30,(TiledMapTileLayer) map.getLayers().get("Collision"))));
-            }
-        });
-        stage.addActor(soloButton);
 
 
         startButton = new TextButton("SEARCH", skin);
